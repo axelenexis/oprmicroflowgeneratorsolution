@@ -1,6 +1,5 @@
 ﻿using Mendix.StudioPro.ExtensionsAPI.Model;
 using Mendix.StudioPro.ExtensionsAPI.Model.DomainModels;
-using Mendix.StudioPro.ExtensionsAPI.Model.Enumerations;
 using Mendix.StudioPro.ExtensionsAPI.Model.MicroflowExpressions;
 using Mendix.StudioPro.ExtensionsAPI.Model.Microflows;
 using Mendix.StudioPro.ExtensionsAPI.Model.DataTypes;
@@ -23,39 +22,48 @@ class OPRMicroflowGenerator(IMicroflowService microflowService, IMicroflowExpres
         var createMicroflow = microflowService.CreateMicroflow(currentApp, module, "OPR_" + entity.Name + "_Create");
         foreach (IAttribute attribute in entity.GetAttributes())
         {
-            DataType? attributeDataType = DataType.Unknown;
-            
-            if (attribute.Type is IStringAttributeType)
-            {
-                attributeDataType = DataType.String;
-            }
-            else if (attribute.Type is IIntegerAttributeType)
-            {
-                attributeDataType = DataType.Integer;
-            }
-            else if (attribute.Type is IBooleanAttributeType)
-            {
-                attributeDataType = DataType.Boolean;
-            }
-            else if (attribute.Type is IDecimalAttributeType)
-            {
-                attributeDataType = DataType.Decimal;
-            }
-            else if (attribute.Type is IDateTimeAttributeType)
-            {
-                attributeDataType = DataType.DateTime;
-            }
-            else if (attribute.Type is IEnumerationAttributeType)
-            {
-                IQualifiedName<IEnumeration> enumQualifiedName = ((IEnumerationAttributeType)attribute.Type).Enumeration;
-                attributeDataType = DataType.Enumeration(enumQualifiedName);
-            }
+            var attributeDataType = DetermineDataType(attribute);
             var entityInputParameter = (entity.Name, DataType.Object(entity.QualifiedName));
             var attributeInputParameter = (attribute.Name, attributeDataType);
             var setMicroflow = microflowService.CreateMicroflow(currentApp, module, "OPR_" + entity.Name + "_Set" + attribute.Name, null, entityInputParameter, attributeInputParameter);
         }
 
         transaction.Commit();
+    }
+
+    static DataType DetermineDataType(IAttribute attribute)
+    {
+        DataType? dataType = attribute switch
+        {
+            IStringAttributeType => DataType.String,
+            IIntegerAttributeType => DataType.Integer,
+            IBooleanAttributeType => DataType.Boolean,
+            IDecimalAttributeType => DataType.Decimal,
+            IDateTimeAttributeType => DataType.DateTime,
+            IEnumerationAttributeType => GetEnumDataType(attribute),
+            _ => DataType.Unknown
+        };
+
+        if (dataType is null)
+        {
+            throw new Exception("Could not determine data type for attribute: " + attribute.Name);
+        }
+
+        return dataType;
+
+    }
+
+    static EnumerationType? GetEnumDataType(IAttribute attribute)
+    {
+        if (attribute is IEnumerationAttributeType)
+        {
+            var enumQualifiedName = (attribute.Type as IEnumerationAttributeType)?.Enumeration;
+            return enumQualifiedName is not null 
+                ? DataType.Enumeration(enumQualifiedName) 
+                : null;
+        }
+
+        return null;
     }
 }
 
