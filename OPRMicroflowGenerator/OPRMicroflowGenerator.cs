@@ -22,7 +22,7 @@ class OPRMicroflowGenerator(
 
         using var transaction = currentApp!.StartTransaction("Generate OPR microflows for entity " + entity.Name);
 
-        var createMicroflow = microflowService.CreateMicroflow(currentApp, module, "OPR_" + entity.Name + "_Create");
+        var createMicroflow = microflowService.CreateMicroflow(currentApp, module, GetCreateMicroflowName(entity.Name));
         foreach (IAttribute attribute in entity.GetAttributes())
         {
             var attributeDataType = DetermineDataType(attribute);
@@ -47,6 +47,9 @@ class OPRMicroflowGenerator(
 
     static string GetOPRMicroflowName(string entityName, string attributeName) 
         => $"OPR_{entityName}_{attributeName}";
+    
+    static string GetCreateMicroflowName(string entityName)
+        => $"OPR_{entityName}_Create";
 
     static DataType DetermineDataType(IAttribute attribute)
     {
