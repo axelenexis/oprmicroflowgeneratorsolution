@@ -30,7 +30,7 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /y /s /i &quot;$(TargetDir)&quot; &quot;C:\_NoBackup\Mendixprojecten\Experimenten\ExtensionTest\extensions\OPRMicroflowGenerator&quot;" />
+    <Exec Command="xcopy /y /s /i &quot;$(TargetDir)&quot; &quot;C:\Mendix\Projects\App\extensions\OPRGenerator&quot;" />
   </Target>
 
 </Project>
