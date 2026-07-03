@@ -1,4 +1,6 @@
-﻿using Mendix.StudioPro.ExtensionsAPI.Model.DomainModels;
+﻿// By Axel Brink and Pascal Bos 2026
+
+using Mendix.StudioPro.ExtensionsAPI.Model.DomainModels;
 using Mendix.StudioPro.ExtensionsAPI.UI.Menu;
 using System.ComponentModel.Composition;
  
