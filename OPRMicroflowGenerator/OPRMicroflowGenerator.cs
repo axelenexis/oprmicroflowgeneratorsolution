@@ -24,38 +24,48 @@ class OPRMicroflowGenerator(IMicroflowService microflowService, IMicroflowExpres
         var createMicroflow = microflowService.CreateMicroflow(currentApp, module, "OPR_" + entity.Name + "_Create");
         foreach (IAttribute attribute in entity.GetAttributes())
         {
-            MicroflowReturnValue? returnValue = null;
-            IMicroflowExpression returnExpression = microflowExpressionService.CreateFromString($"${entity.Name}/{attribute.Name}");
-
+            //MicroflowReturnValue? returnValue = null;
+            //IMicroflowExpression returnExpression = microflowExpressionService.CreateFromString($"${entity.Name}/{attribute.Name}");
+            //var attributeInputParameter;
+            DataType? attributeDataType = DataType.Unknown;
+            
             if (attribute.Type is IStringAttributeType)
             {
-                returnValue = new MicroflowReturnValue(DataType.String, returnExpression);
+                //returnValue = new MicroflowReturnValue(DataType.String, returnExpression);
+                attributeDataType = DataType.String;
+                //attributeInputParameter = (attribute.Name, DataType.String);
             }
             else if (attribute.Type is IIntegerAttributeType)
             {
-                returnValue = new MicroflowReturnValue(DataType.Integer, returnExpression);
+                //returnValue = new MicroflowReturnValue(DataType.Integer, returnExpression);
+                attributeDataType = DataType.Integer;
             }
             else if (attribute.Type is IBooleanAttributeType)
             {
-                returnValue = new MicroflowReturnValue(DataType.Boolean, returnExpression);
+                //returnValue = new MicroflowReturnValue(DataType.Boolean, returnExpression);
+                attributeDataType = DataType.Boolean;
             }
             else if (attribute.Type is IDecimalAttributeType)
             {
-                returnValue = new MicroflowReturnValue(DataType.Decimal, returnExpression);
+                //returnValue = new MicroflowReturnValue(DataType.Decimal, returnExpression);
+                attributeDataType = DataType.Decimal;
             }
             else if (attribute.Type is IDateTimeAttributeType)
             {
-                returnValue = new MicroflowReturnValue(DataType.DateTime, returnExpression);
+                //returnValue = new MicroflowReturnValue(DataType.DateTime, returnExpression);
+                attributeDataType = DataType.DateTime;
             }
             else if (attribute.Type is IEnumerationAttributeType)
             {
                 IQualifiedName<IEnumeration> enumQualifiedName = ((IEnumerationAttributeType)attribute.Type).Enumeration;
-                returnValue = new MicroflowReturnValue(DataType.Enumeration(enumQualifiedName), returnExpression);
+                //returnValue = new MicroflowReturnValue(DataType.Enumeration(enumQualifiedName), returnExpression);
+                attributeDataType = DataType.Enumeration(enumQualifiedName);
             }
-            var inputParameter = (entity.Name, DataType.Object(entity.QualifiedName));
-            var getMicroflow = microflowService.CreateMicroflow(currentApp, module, "OPR_" + entity.Name + "_Get" + attribute.Name,
-                returnValue, inputParameter);
-            var setMicroflow = microflowService.CreateMicroflow(currentApp, module, "OPR_" + entity.Name + "_Set" + attribute.Name, null, inputParameter);
+            var entityInputParameter = (entity.Name, DataType.Object(entity.QualifiedName));
+            //var getMicroflow = microflowService.CreateMicroflow(currentApp, module, "OPR_" + entity.Name + "_Get" + attribute.Name,
+            //    returnValue, entityInputParameter);
+            var attributeInputParameter = (attribute.Name, attributeDataType);
+            var setMicroflow = microflowService.CreateMicroflow(currentApp, module, "OPR_" + entity.Name + "_Set" + attribute.Name, null, entityInputParameter, attributeInputParameter);
         }
 
         transaction.Commit();
