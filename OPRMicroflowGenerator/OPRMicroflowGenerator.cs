@@ -1,7 +1,5 @@
 ﻿using Mendix.StudioPro.ExtensionsAPI.Model;
 using Mendix.StudioPro.ExtensionsAPI.Model.DomainModels;
-using Mendix.StudioPro.ExtensionsAPI.Model.MicroflowExpressions;
-using Mendix.StudioPro.ExtensionsAPI.Model.Microflows;
 using Mendix.StudioPro.ExtensionsAPI.Model.DataTypes;
 using Mendix.StudioPro.ExtensionsAPI.Services;
 using System.ComponentModel.Composition;
@@ -10,7 +8,7 @@ namespace OPRMicroflowGenerator;
 
 [Export(typeof(OPRMicroflowGenerator))]
 [method: ImportingConstructor]
-class OPRMicroflowGenerator(IMicroflowService microflowService, IMicroflowExpressionService microflowExpressionService)
+class OPRMicroflowGenerator(IMicroflowService microflowService)
 {
     public void GenerateOPRMicroflows(IModel currentApp, IEntity entity)
     {
